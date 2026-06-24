@@ -1,40 +1,95 @@
-# Proyecto Python: Análisis Descriptivo e Interpretación de Distribuciones Académicas
+# Proyecto Python: Simulación y Análisis Estadístico de Sesgo en Distribuciones Académicas
 
-Este repositorio contiene un proyecto práctico enfocado en la auditoría estadística e interpretación analítica de distribuciones de frecuencias univariadas. El objetivo de este análisis es evaluar el comportamiento del rendimiento de una cohorte estudiantil a lo largo de cuatro evaluaciones consecutivas, diagnosticando de forma teórica y visual las propiedades de forma (simetría, asimetría y multimodalidad), las métricas de dispersión (rango absoluto) y la presencia de anomalías o valores atípicos (*outliers*) sobre histogramas de densidad.
-
----
-
-## Estructura del Análisis Estadístico (Archivo summary.txt)
-
-A continuación se detalla la documentación técnica formal que describe la morfología matemática de cada una de las pruebas evaluadas:
-
-### 1. Examen 1: Distribución Simétrica Unimodal
-* **Métricas Centrales:** Media aritmética de $80\%$ y Mediana de $80\%$.
-* **Morfología de la Forma:** Al ser la media exactamente igual a la mediana, la distribución se define como **perfectamente simétrica**. Los puntajes se distribuyen uniformemente con la misma densidad tanto a la izquierda como a la derecha del centro de masas.
-* **Dispersión y Anomalías:** El rango absoluto es cercano a $35$ puntos, extendiéndose desde una nota mínima próxima a $55$ hasta una máxima de $90$. Se detecta **un valor atípico (*outlier*)** en el extremo inferior izquierdo, correspondiente al estudiante que obtuvo una calificación cercana a $55$.
-
-### 2. Examen 2: Distribución Asimétrica a la Izquierda (*Left-Skewed*)
-* **Métricas Centrales:** Media aritmética de $82\%$ y Mediana de $84\%$.
-* **Morfología de la Forma:** Debido a que la media es menor que la mediana ($\text{Media} < \text{Mediana}$), la distribución exhibe un **sesgo negativo o asimetría hacia la izquierda**. Esto indica la presencia de una cola alargada en los valores bajos del histograma, provocada por un grupo de alumnos con notas bajas que arrastran el promedio general hacia atrás.
-* **Dispersión:** El rango absoluto se sitúa cerca de los $38$ puntos, abarcando calificaciones desde un límite inferior de $60$ hasta una nota máxima sobresaliente de $98$.
-
-### 3. Examen 3: Distribución Bimodal Simétrica
-* **Métricas Centrales:** Media aritmética de $77\%$ y Mediana de $80\%$.
-* **Morfología de la Forma:** La distribución presenta un comportamiento **bimodal**, caracterizado por exhibir dos picos de frecuencias independientes bien definidos en el histograma. Cada una de las modas locales posee colas uniformes en sus extremos, lo que demuestra que ambos componentes actúan de forma simétrica de manera aislada.
-* **Dispersión:** El rango total del examen es el más amplio del estudio con $42$ puntos de dispersión, albergando una calificación mínima de $56$ y una máxima de $98$.
-
-### 4. Examen Final: Distribución Simétrica Compacta
-* **Métricas Centrales:** Media aritmética de $80\%$ y Mediana de $80\%$.
-* **Morfología de la Forma:** Al coincidir nuevamente los dos estadísticos principales de tendencia central, la distribución se consolida como **simétrica**. La densidad de frecuencias decrece de forma balanceada y proporcional a medida que se aleja del centro hacia los límites laterales de las colas.
-* **Dispersión y Anomalías:** Representa el examen con menor variabilidad del set con un rango estrecho de apenas $30$ puntos (límites de $68$ a $98$). Se identifica **un valor atípico (*outlier*)** ubicado de forma aislada en el extremo superior derecho, correspondiente al estudiante con rendimiento de excelencia que alcanzó el puntaje de $98$.
+Este repositorio contiene un proyecto práctico desarrollado en Python utilizando las librerías **NumPy**, **Matplotlib** y **Pandas** enfocado en el análisis e interpretación visual de distribuciones estadísticas univariadas. El script simula el rendimiento de un alumnado a lo largo de cuatro exámenes mediante la generación de datos estocásticos (distribuciones normales y uniformes combinadas), configura lienzos multidimensionales de subtramas verticales, y audita las relaciones entre la media y la mediana para clasificar formalmente el sesgo (*skewness*) y las anomalías (*outliers*) de cada población.
 
 ---
 
-## Conceptos Estadísticos Aplicados
+## Código Python del Proyecto
 
-* **Relación entre Media y Mediana como Indicador de Sesgo**:
-  * Si $\text{Media} == \text{Mediana}$, la distribución es **Simétrica**.
-  * Si $\text{Media} < \text{Mediana}$, la distribución tiene **Asimetría Negativa o a la Izquierda** (*Left-Skewed*).
-  * Si $\text{Media} > \text{Mediana}$, la distribución tiene **Asimetría Positiva o a la Derecha** (*Right-Skewed*).
-* **Multimodalidad**: Fenómeno estadístico que ocurre cuando un dataset refleja más de un valor común o pico de frecuencia alta. En entornos educativos, una distribución bimodal suele indicar que la muestra está compuesta por dos subpoblaciones diferenciadas (por ejemplo, un grupo de alumnos que asimiló correctamente los conceptos y otro que requiere reforzamiento pedagógico).
-* **Criterio de Valores Atípicos (*Outliers*)**: Registros que se distancian de forma extrema del patrón de comportamiento general de la población. Visualmente se localizan como barras aisladas separadas por espacios vacíos de datos (*gaps*) respecto al cuerpo denso del histograma.
+El programa establece una semilla aleatoria de control, construye los perfiles estadísticos de los exámenes mediante concatenaciones vectoriales y renderiza las curvas de frecuencias:
+
+```python
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
+
+# Definición de semilla estática para garantizar la reproducibilidad del experimento
+np.random.seed(1)
+
+# Inicialización del lienzo estructurado (4 filas de gráficos independientes)
+fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(10, 12))
+
+# --- 1. Examen 1: Distribución Simétrica Unimodal con Outliers ---
+plt.subplot(4, 1, 1)
+mu, sigma = 80, 5
+exam_1 = np.random.normal(mu, sigma, 120)
+# Inyección manual de anomalías (valores atípicos aislados en la cola izquierda)
+exam_1[50] = 55
+exam_1[51] = 55
+plt.hist(exam_1, 25, range=[50, 100])
+plt.ylabel("Count", fontsize=12)
+plt.title("Exam 1", fontsize=14)
+
+# --- 2. Examen 2: Distribución Asimétrica Negativa (Sesgo a la Izquierda) ---
+plt.subplot(4, 1, 2)
+mu, sigma = 85, 5
+exam_2_norm = np.random.normal(mu, sigma, 85)
+exam_2_u = np.random.uniform(60, 80, 35)
+exam_2 = np.concatenate((exam_2_norm, exam_2_u))
+plt.hist(exam_2, 25, range=[50, 100])
+plt.ylabel("Count", fontsize=12)
+plt.title("Exam 2", fontsize=14)
+
+# --- 3. Examen 3: Distribución Bimodal (Dos picos de frecuencia) ---
+plt.subplot(4, 1, 3)
+mu, sigma = 85, 5
+exam_3_norm_1 = np.random.normal(mu, sigma, 70)
+exam_3_norm_2 = np.random.normal(65, 3.5, 50)
+exam_3 = np.concatenate((exam_3_norm_1, exam_3_norm_2))
+plt.hist(exam_3, 25, range=[50, 100])
+plt.ylabel("Count", fontsize=12)
+plt.title("Exam 3", fontsize=14)
+
+# --- 4. Examen Final: Distribución Normal Estándar de Control ---
+plt.subplot(4, 1, 4)
+mu, sigma = 80, 6
+final_norm = np.random.normal(mu, sigma, 120)
+final_exam = np.concatenate((final_norm, np.array([96, 96])))
+
+print("Métricas del Examen Final:")
+print("Media Aritmética: " + str(round(np.average(final_exam), 2)))
+print("Mediana Central: " + str(round(np.median(final_exam), 2)))
+
+plt.hist(final_exam, 25, range=[50, 100])
+plt.xlabel("Score (%)", fontsize=12)
+plt.ylabel("Count", fontsize=12)
+plt.title("Final Exam", fontsize=14)
+
+# Optimización de espaciados entre ejes de subtramas
+fig.tight_layout()
+plt.savefig("distribuciones_examenes.png")  # Exportación automática del gráfico
+plt.close()
+
+```
+
+---
+
+## Reporte de Interpretación de Histogramas (`summary.txt`)
+
+El análisis visual de las formas geométricas de los histogramas y la posición relativa de sus estadísticos centrales permite diagnosticar formalmente la naturaleza de cada población:
+
+### 1. Cuadro Resumen de Formas Morfológicas
+
+| Evaluación Técnica | Tipo de Distribución | Relación de Métricas Centrales | Diagnóstico Estadístico del Rendimiento |
+| --- | --- | --- | --- |
+| **Examen 1** | **Simétrica** | $\text{Media} \approx \text{Mediana} = 80$ | Rendimiento balanceado. Presenta dos *outliers* severos en la zona baja de la escala ($55\%$). |
+| **Examen 2** | **Sesgo Negativo** | $\text{Media} < \text{Mediana}$ ($82 < 84$) | Distribución con cola hacia la izquierda. La mayoría del curso aprobó con notas altas, arrastrando el promedio hacia abajo un grupo menor. |
+| **Examen 3** | **Bimodal** | Posee dos modas locales | Se observan dos picos claros de frecuencia. Indica una polarización del curso (un grupo consolidado bajo y otro alto). |
+| **Final Exam** | **Normal Simétrica** | $\text{Media} \approx \text{Mediana}$ (~$79.5$) | Curva balanceada clásica (campana de Gauss) con una dispersión estable controlada por la desviación estándar. |
+
+## Conceptos Técnicos Aplicados
+
+* **Sesgo de una Distribución (*Skewness*)**: Propiedad geométrica que determina el grado de asimetría de una población. Si los datos se extienden con una cola más larga hacia valores bajos se denomina sesgo a la izquierda o negativo ($\text{Media} < \text{Mediana}$), mientras que si se extiende hacia la derecha se denomina sesgo positivo ($\text{Media} > \text{Mediana}$).
+* **Poblaciones Bimodales**: Distribución de frecuencias que presenta dos máximos locales relativos separados por un valle. En analítica, denota de forma inmediata la presencia de dos subgrupos heterogéneos solapados que requieren ser segmentados de forma independiente.
+* **Ajuste de Lienzo Compacto (`fig.tight_layout()`)**: Instrucción de Matplotlib que inspecciona las dimensiones de las etiquetas de los ejes (`labels`), títulos y regiones de las subtramas en un diseño multicanal, recalculando automáticamente las distancias para evitar superposiciones residuales de texto en el renderizado final.
+
